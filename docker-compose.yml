@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 
 services:
 
@@ -8,19 +8,40 @@ services:
     build: .
     environment:
       - TZ=Europe/Paris
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.${HOST_HOSTNAME}`)"
+      - "traefik.http.routers.jenkins.tls=true"
     volumes:
       - jenkins-data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+      # deprecated
+      #- /var/run/docker.sock:/var/run/docker.sock
+      - jenkins-docker-certs:/certs/client:ro
+    restart: unless-stopped
+
+  jenkins-docker:
+    container_name: docker
+    image: docker:dind
+    #command: ["--registry-mirror", "https://mirror.gcr.io"]
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
     restart: unless-stopped
 
 volumes:
   jenkins-data:
     name: jenkins-data
+  jenkins-docker-certs:
+    name: jenkins-docker-certs
 
 networks:
   default:
-    external:
-      name: devbox
+    name: devbox
+    external: true
+      
