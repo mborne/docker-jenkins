@@ -18,7 +18,7 @@ RUN apt-get update \
    $(lsb_release -cs) \
    stable" \
  && apt-get update \
- && apt-get install -y --no-install-recommends docker-ce-cli \
+ && apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin \
  && apt-get clean
 
 USER jenkins
