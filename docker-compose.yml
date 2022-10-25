@@ -16,7 +16,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.${HOST_HOSTNAME}`)"
-      - "traefik.http.routers.jenkins.tls=true"
     volumes:
       - jenkins-data:/var/jenkins_home
       # deprecated
@@ -44,6 +43,4 @@ volumes:
 
 networks:
   default:
-    name: devbox
-    external: true
-      
+    name: jenkins
