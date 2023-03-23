@@ -13,13 +13,14 @@ services:
       - DOCKER_TLS_VERIFY=1
       # allows external css
       - "JENKINS_JAVA_OPTS=-Djava.awt.headless=true -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; style-src 'self' 'unsafe-inline';\""
+    networks:
+      - jenkins
+      - devbox
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jenkins.rule=Host(`jenkins.${HOST_HOSTNAME}`)"
     volumes:
       - jenkins-data:/var/jenkins_home
-      # deprecated
-      #- /var/run/docker.sock:/var/run/docker.sock
       - jenkins-docker-certs:/certs/client:ro
     restart: unless-stopped
 
@@ -30,6 +31,8 @@ services:
     privileged: true
     environment:
       - DOCKER_TLS_CERTDIR=/certs
+    networks:
+      - jenkins
     volumes:
       - jenkins-docker-certs:/certs/client
       - jenkins-data:/var/jenkins_home
@@ -42,5 +45,8 @@ volumes:
     name: jenkins-docker-certs
 
 networks:
-  default:
+  jenkins:
     name: jenkins
+  devbox:
+    name: devbox
+    external: true

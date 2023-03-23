@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${DOCKER_REGISTRY_URL}", "${DOCKER_REGISTRY_CREDENTIAL_ID}") {
-                        def app = docker.build('mborne/jenkins')
+                        def app = docker.build('mborne/jenkins','--pull .')
                         app.push("lts")
                     }
                 }
